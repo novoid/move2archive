@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Time-stamp: <2012-08-16 13:32:58 vk>
+# Time-stamp: <2012-12-30 16:01:40 vk>
 
 import os
 import sys
@@ -243,7 +243,7 @@ def handle_item(itemname, archivepath, targetdir):
 
     if not os.path.exists(itemname):
         logging.error("item \"" + itemname + "\" does not exist! Ignoring.")
-    elif options.targetdir or options.askfordir:
+    elif targetdir and (options.targetdir or options.askfordir):
         ## targetdir option is given and this directory is created before
         ## so just move items here:
         move_item(itemname, targetdir)
@@ -309,7 +309,12 @@ def main():
     elif options.askfordir:
         print "Please enter directory basename: "
         targetdirname = sys.stdin.readline().strip()
-        targetdirname = generate_absolute_target_dir(targetdirname, args, archivepath)
+        if (not targetdirname):
+            ## if no folder is given by the user, act like askfordir is not the case:
+            logging.debug("targetdirname was empty: acting, like --askfordir is not given")
+            assert_each_item_has_datestamp(args)
+        else:
+            targetdirname = generate_absolute_target_dir(targetdirname, args, archivepath)
     else:
         assert_each_item_has_datestamp(args)
 
