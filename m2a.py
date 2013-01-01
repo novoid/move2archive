@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Time-stamp: <2012-12-30 16:01:40 vk>
+# Time-stamp: <2013-01-01 19:42:29 vk>
 
 import os
 import sys
@@ -12,9 +12,11 @@ import shutil ## for copying and moving items
 
 ## TODO:
 ## * fix parts marked with «FIXXME»
+## * document folder shortcut for "lp" and "rp"
+## * document "no target folder given" with askfordir (just like no askfordir)
 
-PROG_VERSION_NUMBER = u"0.1"
-PROG_VERSION_DATE = u"2011-10-12"
+PROG_VERSION_NUMBER = u"0.2"
+PROG_VERSION_DATE = u"2013-01-01"
 INVOCATION_TIME = time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime())
 
 ## better performance if ReEx is pre-compiled:
@@ -207,6 +209,24 @@ def make_sure_targetdir_exists(archivepath, targetdir):
     return complete_target_path
 
             
+def make_sure_subdir_exists(currentdir, subdir):
+    """create directory if necessary; abort if existing and no append options given"""
+
+    logging.debug("make_sure_subdir_exists: currentdir [%s] subdir [%s]" % ( currentdir, subdir ) )
+    complete_target_path = os.path.join(currentdir, subdir)
+
+    if os.path.isdir(complete_target_path):
+        logging.debug("target directory already exists. Appending files...")
+    else:
+        if not options.dryrun:
+            logging.info("creating directory: \"" + complete_target_path + "\"")
+            os.mkdir(complete_target_path)
+        else:
+            logging.info("creating directory: \"" + complete_target_path + "\"")
+
+    return complete_target_path
+
+            
 def get_year_from_itemname(itemname):
     """extract year from item string"""
 
@@ -240,6 +260,7 @@ def handle_item(itemname, archivepath, targetdir):
 
     logging.debug( "--------------------------------------------")
     logging.debug("processing item \""+ itemname + "\"")
+    logging.debug("with archivepath[%s]  and  targetdir[%s]" % (archivepath, targetdir))
 
     if not os.path.exists(itemname):
         logging.error("item \"" + itemname + "\" does not exist! Ignoring.")
@@ -314,7 +335,16 @@ def main():
             logging.debug("targetdirname was empty: acting, like --askfordir is not given")
             assert_each_item_has_datestamp(args)
         else:
-            targetdirname = generate_absolute_target_dir(targetdirname, args, archivepath)
+            if targetdirname == 'lp':
+                ## overriding targetdir with lp-shortcut:
+                logging.debug("targetdir-shortcut 'lp' (low prio) found")
+                targetdirname = make_sure_subdir_exists( os.getcwd(), 'lp' )
+            elif targetdirname == 'rp':
+                ## overriding targetdir with rp-shortcut:
+                logging.debug("targetdir-shortcut 'rp' (Rohpanorama) found")
+                targetdirname = make_sure_subdir_exists( os.getcwd(), 'Rohpanoramas' )
+            else:
+                targetdirname = generate_absolute_target_dir(targetdirname, args, archivepath)
     else:
         assert_each_item_has_datestamp(args)
 
