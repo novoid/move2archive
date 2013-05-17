@@ -1,4 +1,4 @@
-## Time-stamp: <2013-05-17 11:43:03 vk>
+## Time-stamp: <2013-05-17 11:45:44 vk>
 ## -*- coding: utf-8 -*-
 ## This file is best viewed with GNU Emacs Org-mode: http://orgmode.org/
 
@@ -38,8 +38,9 @@ For the complete usage help, please use the ~--help~ option.
 
 
 - *Target group*: users who are able to use command line tools and who
-  are managing photographs and such in folder structures.
-- Hosted on github: https://github.com/novoid/m2a
+  are managing photographs and other event-related files in folder
+  structures.
+- Hosted on github: https://github.com/novoid/move2archive
 
 ** Why
 
