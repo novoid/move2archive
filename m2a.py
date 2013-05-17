@@ -83,9 +83,9 @@ parser.add_option("-a", "--append", dest="append", action="store_true",
                        "instead of aborting.")
 
 parser.add_option("--archivepath", dest="archivepath",
-                  help='overwrite the default archive base directory which contains one ' +
-                       'subdirectory per year. DEFAULT is currently "' + DEFAULT_ARCHIVE_PATH +
-                       '" (which can be modified in "' + sys.argv[0] + '")', metavar="DIR")
+                  help='overwrite the default archive base directory which contains one '
+                       'subdirectory per year. DEFAULT is currently "%s" (which can be modified '
+                       'in "%s")' % (DEFAULT_ARCHIVE_PATH, sys.argv[0]), metavar="DIR")
 
 ## parser.add_option("-b", "--batch", dest="batchmode", action="store_true",
 ##                   help="Do not ask for user interaction (at the end of the process)")
@@ -131,18 +131,16 @@ def error_exit(errorcode, text):
 def extract_targetdirbasename_with_datestamp(targetdirbasename, args):
     """extracts the full targetdirname including ISO datestamp"""
 
-    # targetdirbasename = os.path.basename(targetdir)
-    # targetdirpath = os.path.dirname(targetdir)
-
     re_components = re.match(DATESTAMP_REGEX, targetdirbasename)
 
-    first_datestamp = current_datestamp = None
+    first_datestamp = None
+    current_datestamp = None
 
     if re_components:
         logging.debug('targetdir "%s" contains datestamp. Extracting nothing.' % targetdirbasename)
         return targetdirbasename
     else:
-        logging.debug('targetdir "' + targetdirbasename + '" contains no datestamp. ' +
+        logging.debug('targetdir "' + targetdirbasename + '" contains no datestamp. '
                       'Trying to extract one from the arguments ...')
         for item in args:
             itembasename = os.path.basename(item.strip())
@@ -232,7 +230,7 @@ def get_year_from_itemname(itemname):
     components = re.match(DATESTAMP_REGEX, os.path.basename(itemname))
 
     if not components:
-        error_exit(7, 'item "%s" should have a datestamp in it. ' +
+        error_exit(7, 'item "%s" should have a datestamp in it. '
                       'Should have been checked before, internal error :-(' % str(itemname))
 
     return components.group(DATESTAMP_REGEX_YEARINDEX)
@@ -287,7 +285,7 @@ def main():
     """Main function"""
 
     if options.version:
-        print os.path.basename(sys.argv[0]) + " version "+PROG_VERSION_NUMBER+" from "+PROG_VERSION_DATE
+        print "%s version %s from %s" % (os.path.basename(sys.argv[0]), PROG_VERSION_NUMBER, PROG_VERSION_DATE)
         sys.exit(0)
 
     handle_logging()
@@ -298,11 +296,11 @@ def main():
         logging.info('Option "--dryrun" found, running a simulation, not modifying anything on file system:')
 
     if options.append and not options.targetdir:
-        logging.warning('The "--append" options is only necessary in combination ' +
+        logging.warning('The "--append" options is only necessary in combination '
                         'with the "--directory" option. Ignoring this time.')
 
     if options.targetdir and options.askfordir:
-        error_exit(8, 'Options "--directory" and "--askfordirectory" are mutual exclusive: ' +
+        error_exit(8, 'Options "--directory" and "--askfordirectory" are mutual exclusive: '
                       'use one at maximum.')
 
     archivepath = None
@@ -313,9 +311,9 @@ def main():
         archivepath = DEFAULT_ARCHIVE_PATH
 
     if not os.path.isdir(archivepath):
-        error_exit(1, '\n\nThe archive directory "%s" is not a directory!\n' +
-                      'modify default setting in "%s" or provide a valid ' +
-                      'directory with command line option "--archivepath".\n' % archivepath, sys.argv[0])
+        error_exit(1, '\n\nThe archive directory "%s" is not a directory!\n'
+                      'modify default setting in "%s" or provide a valid '
+                      'directory with command line option "--archivepath".\n' % (archivepath, sys.argv[0]))
 
     if len(args) < 1:
         parser.error("Please add at least one file name as argument")
