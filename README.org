@@ -1,0 +1,136 @@
+## Time-stamp: <2013-05-17 11:33:22 vk>
+## -*- coding: utf-8 -*-
+## This file is best viewed with GNU Emacs Org-mode: http://orgmode.org/
+
+* m2a.py
+
+This script moves items (files or directories) containing ISO datestamps 
+like ~YYYY-MM-DD~ into a directory stucture for the corresponding year.
+
+You define the base directory either in this script (or using the
+command line argument ~--archivedir~). The convention is, e.g.:
+
+        <archivepath>/2009
+        <archivepath>/2010
+        <archivepath>/2011
+
+Per default, this script extracts the year from the datestamp of
+each file and moves it into the corresponding directory for its year:
+
+: ./m2a.py 2010-01-01_Jan2010.txt 2011-02-02_Feb2011.txt
+... moves ~2010-01-01_Jan2010.txt~ to ~<archivepath>/2010/~
+... moves ~2011-02-02_Feb2011.txt~ to ~<archivepath>/2011/~
+
+OPTIONALLY you can define a sub-directory name with option ~-d DIR~. If it
+contains no datestamp by itself, a datestamp from the first file of the
+argument list will be used. This datestamp will be put in front of the name:
+
+: ./m2a.py  -d "2009-02-15 bar"  one two three
+... moves all items to: ~<archivepath>/2009/2009-02-15 bar/~
+
+: ./m2a.py  -d bar  2011-10-10_one 2008-01-02_two 2011-10-12_three
+... moves all items to: ~<archivepath>/2011/2011-10-10 bar/~
+
+If you feel uncomfortable you can simulate the behavior using the ~--dryrun~
+option. You see what would happen without changing anything at all.
+
+For the complete usage help, please use the ~--help~ option.
+
+
+- *Target group*: users who are able to use command line tools and who
+  are managing photographs and such in folder structures.
+- Hosted on github: https://github.com/novoid/m2a
+
+** Why
+
+There is no integrated software solution for managing photographs
+that will (a) provide you all of the features you will ever want, (b)
+be available for a long period of time, and (c) provide a
+future-prove, platform-independent work-flow.
+
+This is the reason I came up with this method of organizing archive
+files (photographs, scanned PDF files, memories, ...) in such a
+folder structure.
+
+** Bonus: integrating into Geeqie (or similar file browsers)
+
+I am using [[http://geeqie.sourceforge.net/][geeqie]] for browsing/presenting image files. For quickly
+moving files to their folders, I mapped this script to ~m~. This way,
+I can go through new image files and move event-related photographs
+very quickly.
+
+Using GNU/Linux, this is quite easy accomplished. The only thing that
+is not straight forward is the need for a wrapper script. The wrapper
+script does provide a shell window for entering the tags.
+
+~vk-m2a-wrapper-with-gnome-terminal.sh~ looks like:
+: #!/bin/sh
+: 
+: /usr/bin/gnome-terminal \
+:     --geometry=157x56+330+5  \
+:     --tab-with-profile=big \
+:     --hide-menubar \
+:     -x /home/vk/bin/m2a --pauseonexit --askfordir "${@}"
+: 
+: #end
+
+In ~$HOME/.config/geeqie/applications~ I wrote a desktop file such
+that geeqie shows the wrapper script as external editor to its
+image files:
+
+~$HOME/.config/geeqie/applications/m2a.desktop~ looks like:
+: [Desktop Entry]
+: Name=m2a
+: GenericName=m2a
+: Comment=
+: Exec=/home/vk/src/misc/vk-m2a-wrapper-with-gnome-terminal.sh %F
+: Icon=
+: Terminal=true
+: Type=Application
+: Categories=Application;Graphics;
+: hidden=false
+: MimeType=image/*;video/*;image/mpo;image/thm
+: Categories=X-Geeqie;
+
+In order to be able to use the keyboard shortcuts ~m~, you can define
+them in geeqie:
+1. Edit > Preferences > Preferences ... > Keyboard.
+2. Scroll to the bottom of the list.
+3. Double click in the ~KEY~-column of ~m2a~ and choose
+   your desired keyboard shortcut accordingly.
+
+I hope this method is as handy for you as it is for me :-)
+
+** Related tools and workflows
+
+For *tagging*, please refer to [[https://github.com/novoid/filetag][filetag]] and its documentation.
+
+See [[https://github.com/novoid/date2name][date2name]] for easily adding ISO time-stamps or date-stamps to
+files.
+
+For easily naming and tagging files within file browsers that allow
+integration of external tools, see [[https://github.com/novoid/appendfilename][appendfilename]] (once more) and
+[[https://github.com/novoid/filetag][filetag]].
+
+Having tagged photographs gives you many advantages. For example, I
+automatically [[https://github.com/novoid/set_desktop_background_according_to_season][choose my desktop background image according to the
+current season]].
+
+Files containing an ISO time/date-stamp gets indexed by the
+filename-module of [[https://github.com/novoid/Memacs][Memacs]].
+
+
+* Contribute!
+
+I am looking for your ideas!
+
+If you want to contribute to this cool project, please fork and
+contribute!
+
+
+* Local Variables                                                  :noexport:
+# Local Variables:
+# mode: auto-fill
+# mode: flyspell
+# eval: (ispell-change-dictionary "en_US")
+# End:
