@@ -1,4 +1,4 @@
-## Time-stamp: <2013-05-17 11:33:22 vk>
+## Time-stamp: <2013-05-17 11:41:27 vk>
 ## -*- coding: utf-8 -*-
 ## This file is best viewed with GNU Emacs Org-mode: http://orgmode.org/
 
@@ -10,18 +10,18 @@ like ~YYYY-MM-DD~ into a directory stucture for the corresponding year.
 You define the base directory either in this script (or using the
 command line argument ~--archivedir~). The convention is, e.g.:
 
-        <archivepath>/2009
-        <archivepath>/2010
-        <archivepath>/2011
+: <archivepath>/2011
+: <archivepath>/2011/2011-12-20 Meeting Friends at Barleys
+: <archivepath>/2011/2011-12-20 Meeting Friends at Barleys/Tom with Beer.jpeg
 
-Per default, this script extracts the year from the datestamp of
-each file and moves it into the corresponding directory for its year:
+This script extracts the year from the datestamp of each file and
+moves it into the corresponding directory for its year:
 
 : ./m2a.py 2010-01-01_Jan2010.txt 2011-02-02_Feb2011.txt
 ... moves ~2010-01-01_Jan2010.txt~ to ~<archivepath>/2010/~
 ... moves ~2011-02-02_Feb2011.txt~ to ~<archivepath>/2011/~
 
-OPTIONALLY you can define a sub-directory name with option ~-d DIR~. If it
+OPTIONALLY: you can define a sub-directory name with option ~-d DIR~. If it
 contains no datestamp by itself, a datestamp from the first file of the
 argument list will be used. This datestamp will be put in front of the name:
 
