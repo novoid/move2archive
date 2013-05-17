@@ -27,8 +27,7 @@ DATESTAMP_REGEX_DAYINDEX = 3
 DATESTAMP_REGEX_MONTHINDEX = 2
 DATESTAMP_REGEX_YEARINDEX = 1
 
-DEFAULT_ARCHIVE_PATH = os.environ['HOME'] + "/archive/events_memories"
-
+DEFAULT_ARCHIVE_PATH = os.path.join(os.path.expanduser("~"), "archive", "events_memories")
 PAUSEONEXITTEXT = "    press <Enter> to quit"
 
 USAGE = u"""
