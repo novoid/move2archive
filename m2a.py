@@ -144,10 +144,8 @@ def extract_targetdirbasename_with_datestamp(targetdirbasename, args):
     else:
         logging.debug('targetdir "' + targetdirbasename + '" contains no datestamp. ' +
                       'Trying to extract one from the arguments ...')
-        datestamp = None
         for item in args:
             itembasename = os.path.basename(item.strip())
-            itemdirname = os.path.dirname(item.strip())
             re_components = re.match(DATESTAMP_REGEX, itembasename)
             if re_components:
                 logging.debug('found datestamp "%s" in item "%s"' % (re_components.group(0), item.strip()))
