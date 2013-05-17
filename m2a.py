@@ -5,10 +5,10 @@
 import os
 import sys
 import re
-import time
 import logging
 from optparse import OptionParser
-import shutil  # for copying and moving items
+from datetime import datetime
+import shutil
 
 ## TODO:
 ## * fix parts marked with «FIXXME»
@@ -17,16 +17,9 @@ import shutil  # for copying and moving items
 
 PROG_VERSION_NUMBER = u"0.2"
 PROG_VERSION_DATE = u"2013-01-01"
-INVOCATION_TIME = time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime())
-
-## better performance if ReEx is pre-compiled:
 
 ## search for: «YYYY-MM-DD»
-DATESTAMP_REGEX = re.compile("([12]\d\d\d)-([012345]\d)-([012345]\d)")
-DATESTAMP_REGEX_DAYINDEX = 3
-DATESTAMP_REGEX_MONTHINDEX = 2
-DATESTAMP_REGEX_YEARINDEX = 1
-
+DATESTAMP_REGEX = re.compile("\d\d\d\d-[01]\d-[0123]\d")
 DEFAULT_ARCHIVE_PATH = os.path.join(os.path.expanduser("~"), "archive", "events_memories")
 PAUSEONEXITTEXT = "    press <Enter> to quit"
 
@@ -127,42 +120,47 @@ def error_exit(errorcode, text):
     sys.exit(errorcode)
 
 
+def extract_date(text):
+    """extracts the date from a text. Returns a datetime-object if a valid date was found, otherwise returns None."""
+
+    components = re.search(DATESTAMP_REGEX, os.path.basename(text.strip()))
+    try:
+        return datetime.strptime(components.group(), "%Y-%m-%d")
+    except (ValueError, AttributeError):
+        return None
+
+
 def extract_targetdirbasename_with_datestamp(targetdirbasename, args):
     """extracts the full targetdirname including ISO datestamp"""
 
-    re_components = re.match(DATESTAMP_REGEX, targetdirbasename)
-
-    first_datestamp = None
-    current_datestamp = None
-
-    if re_components:
+    current_datestamp = extract_date(targetdirbasename)
+    if current_datestamp:
         logging.debug('targetdir "%s" contains datestamp. Extracting nothing.' % targetdirbasename)
         return targetdirbasename
     else:
+        first_datestamp = None
         logging.debug('targetdir "' + targetdirbasename + '" contains no datestamp. '
                       'Trying to extract one from the arguments ...')
         for item in args:
             itembasename = os.path.basename(item.strip())
-            re_components = re.match(DATESTAMP_REGEX, itembasename)
-            if re_components:
-                logging.debug('found datestamp "%s" in item "%s"' % (re_components.group(0), item.strip()))
-                current_datestamp = re_components.group(0)
+            current_datestamp = extract_date(itembasename)
+            if current_datestamp:
+                logging.debug('found datestamp "%s" in item "%s"' % (current_datestamp.isoformat()[:10], item.strip()))
                 if first_datestamp:
-                    logging.debug('comparing current datestamp "%s" with first datestamp' % re_components.group(0))
+                    logging.debug('comparing current datestamp "%s" with first datestamp' % current_datestamp.isoformat()[:10])
                     if current_datestamp != first_datestamp:
-                        logging.warning('Datestamp of item "' +
-                                        item.strip() + '" differs from previously found datestamp "' +
-                                        first_datestamp + '". Taking previously found.')
+                        logging.warning('Datestamp of item "%s" differs from previously found datestamp "%s". '
+                                        'Taking previously found.' % (item.strip(), first_datestamp.isoformat()[:10]))
                     else:
                         logging.debug("current datestamp is the same as the first one")
                 else:
-                    logging.debug('setting first datestamp to "%s"' % re_components.group(0))
+                    logging.debug('setting first datestamp to "%s"' % current_datestamp.isoformat()[:10])
                     first_datestamp = current_datestamp
             else:
                 logging.warning('item "%s" has got no datestamp!' % item.strip())
 
         if first_datestamp:
-            final_targetdir = first_datestamp + " " + targetdirbasename
+            final_targetdir = first_datestamp.isoformat()[:10] + " " + targetdirbasename
             logging.debug('proposed targetdir "%s"' % final_targetdir)
             return final_targetdir
         else:
@@ -172,14 +170,16 @@ def extract_targetdirbasename_with_datestamp(targetdirbasename, args):
 
 
 def assert_each_item_has_datestamp(items):
-    """make sure that each item has a datestamp"""
+    """make sure that each item has a valid datestamp"""
 
-    logging.debug("checking each item for datestamp")
+    logging.debug("checking each item for valid datestamp")
     for item in items:
-        re_components = re.match(DATESTAMP_REGEX, os.path.basename(item.strip()))
-
-        if not re_components:
-            error_exit(3, 'item "%s" has got no datestamp! Can not process this item.' % item)
+        components = re.search(DATESTAMP_REGEX, os.path.basename(item.strip()))
+        try:
+            item_date = datetime.strptime(components.group(), "%Y-%m-%d")
+            return item_date.year
+        except (ValueError, AttributeError):
+            error_exit(3, 'item "%s" has got no valid datestamp! Can not process this item.' % item)
 
 
 def make_sure_targetdir_exists(archivepath, targetdir):
@@ -226,13 +226,12 @@ def get_year_from_itemname(itemname):
     """extract year from item string"""
 
     ## assert: main() makes sure that each item has datestamp!
-    components = re.match(DATESTAMP_REGEX, os.path.basename(itemname))
-
-    if not components:
-        error_exit(7, 'item "%s" should have a datestamp in it. '
+    components = re.search(DATESTAMP_REGEX, os.path.basename(itemname))
+    try:
+        return datetime.strptime(components.group(), "%Y-%m-%d").year
+    except (ValueError, AttributeError):
+        error_exit(7, 'item "%s" should have a valid datestamp in it. '
                       'Should have been checked before, internal error :-(' % str(itemname))
-
-    return components.group(DATESTAMP_REGEX_YEARINDEX)
 
 
 def move_item(item, destination):
@@ -266,8 +265,8 @@ def handle_item(itemname, archivepath, targetdir):
     else:
         ## find the correct <YYYY> subdirectory for each item:
         year = get_year_from_itemname(itemname)
-        logging.debug('extracted year "%s" from item "%s"' % (year, itemname))
-        destination = os.path.join(archivepath, year)
+        logging.debug('extracted year "%d" from item "%s"' % (year, itemname))
+        destination = os.path.join(archivepath, str(year))
         move_item(itemname, destination)
 
 
