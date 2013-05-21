@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Time-stamp: <2013-01-01 19:42:29 vk>
+# Time-stamp: <2013-05-21 11:59:57 vk>
 
 import os
 import sys
@@ -17,7 +17,7 @@ import shutil ## for copying and moving items
 
 PROG_VERSION_NUMBER = u"0.2"
 PROG_VERSION_DATE = u"2013-01-01"
-INVOCATION_TIME = time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime())
+INVOCATION_TIME = time.strftime("%Y-%m-%dT%H:%M:%S", time.localtime())
 
 ## better performance if ReEx is pre-compiled:
 
