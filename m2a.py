@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Time-stamp: <2013-09-14 14:33:20 vk>
+# Time-stamp: <2013-10-11 15:34:15 vk>
 
 import os
 import sys
@@ -189,7 +189,7 @@ def make_sure_targetdir_exists(archivepath, targetdir):
 
     logging.debug("make_sure_target_exists: archivepath [%s] targetdir [%s]" % (archivepath, targetdir))
     year = get_year_from_itemname(targetdir)
-    complete_target_path = os.path.join(archivepath, year, targetdir)
+    complete_target_path = os.path.join(str(archivepath), str(year), str(targetdir))
 
     if os.path.isdir(complete_target_path):
         if options.append:
