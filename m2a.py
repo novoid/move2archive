@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Time-stamp: <2014-10-31 17:40:05 vk>
+# Time-stamp: <2014-10-31 20:08:00 vk>
 
 import os
 import sys
@@ -9,10 +9,10 @@ import logging
 from optparse import OptionParser
 from datetime import datetime
 import shutil
+import fnmatch ## for searching matching directories
 
 ## TODO:
 ## * fix parts marked with «FIXXME»
-## * document folder shortcut for "lp" and "rp"
 ## * document "no target folder given" with askfordir (just like no askfordir)
 
 PROG_VERSION_NUMBER = u"0.3"
@@ -70,7 +70,8 @@ parser.add_option("-d", "--directory", dest="targetdir",
                   help="name of a target directory that should be created (optionally add datestamp)", metavar="DIR")
 
 parser.add_option("--askfordirectory", dest="askfordir", action="store_true",
-                  help='similar to "-d" but tool asks for an input line when invoked')
+                  help='similar to "-d" but tool asks for an input line when invoked. ' +\
+                  'Shortcut: "rp" moves to folder named "Rohpanorama".')
 
 parser.add_option("-a", "--append", dest="append", action="store_true",
                   help="if target directory already exists, append to it " +
@@ -97,6 +98,10 @@ parser.add_option("--version", dest="version", action="store_true",
                   help="display version and exit")
 
 (options, args) = parser.parse_args()
+
+global user_selected_suggested_directory
+user_selected_suggested_directory = False
+
 
 
 def handle_logging():
@@ -190,9 +195,10 @@ def make_sure_targetdir_exists(archivepath, targetdir):
     logging.debug("make_sure_target_exists: archivepath [%s] targetdir [%s]" % (archivepath, targetdir))
     year = get_year_from_itemname(targetdir)
     complete_target_path = os.path.join(str(archivepath), str(year), str(targetdir))
-
+    global user_selected_suggested_directory
+    
     if os.path.isdir(complete_target_path):
-        if options.append:
+        if options.append or user_selected_suggested_directory:
             logging.debug("target directory already exists. Appending files...")
         else:
             error_exit(4, "target directory already exists. Aborting.")
@@ -281,6 +287,66 @@ def generate_absolute_target_dir(targetdir, args, archivepath):
     return make_sure_targetdir_exists(archivepath, targetdirname)
 
 
+def get_potential_target_directories(args, archivepath):
+    """takes first argument, extracts its date-stamp, looks for existing
+    directories starting with the time-stamp (or similar) and returns the
+    list of the directories."""
+
+    firstfile=args[0]
+    assert(os.path.exists(firstfile))
+    firstfile = os.path.basename(firstfile)
+    assert_each_item_has_datestamp([firstfile])
+
+    item_date = extract_date(firstfile)
+    yearfolder = os.path.join(archivepath, str(item_date.year))
+    assert(os.path.exists(yearfolder))
+
+    ## existing yearfolder found; looking for matching subfolders:
+    logging.debug("looking for potential existing target folders for file \"%s\" in folder \"%s\"" % (firstfile, yearfolder))
+    datestamp = firstfile[0:10]
+    pattern = datestamp+'*'
+    directory_suggestions = []
+ 
+    for root, dirs, files in os.walk(yearfolder):
+        for directory in fnmatch.filter(dirs, pattern):
+            #print( os.path.join(root, filename))
+            logging.debug("found matching folder \"%s\"" % (directory))
+            directory_suggestions.append(directory)
+    logging.debug("found %i potential directory suggestions" % (len(directory_suggestions)))
+
+    return directory_suggestions
+
+
+def print_potential_target_directories(directory_suggestions):
+    """prints list of potential target directories with their shortcuts."""
+
+    number_of_suggestions = len(directory_suggestions)
+    assert(number_of_suggestions>0)
+
+    if number_of_suggestions > 1:
+        print '\n ' + str(number_of_suggestions) + \
+            ' matching target directories found. Enter its number if you want to use one of it:'
+    else:
+        print '\n One matching target directory found. Enter "1" if you want to use it:'
+    
+    index = 1 # caution: for usability purposes, we do not start with 0 here!
+    for directory in directory_suggestions:
+        print '  [' + str(index) + ']  ' + directory
+        index += 1
+    print '\n'
+
+    return
+
+
+def is_an_integer(data):
+    """returns true if string is an integer"""
+    try: 
+        int(data)
+        return True
+    except ValueError:
+        return False
+
+    
 def main():
     """Main function"""
 
@@ -322,6 +388,12 @@ def main():
     if options.targetdir:
         targetdirname = generate_absolute_target_dir(options.targetdir, args, archivepath)
     elif options.askfordir:
+        
+        directory_suggestions = get_potential_target_directories(args, archivepath)
+        number_of_suggestions = len(directory_suggestions)
+        if number_of_suggestions > 0:
+            print_potential_target_directories(directory_suggestions)
+        
         print "Please enter directory basename: "
         targetdirname = sys.stdin.readline().strip()
         if (not targetdirname):
@@ -329,14 +401,30 @@ def main():
             logging.debug("targetdirname was empty: acting, like --askfordir is not given")
             assert_each_item_has_datestamp(args)
         else:
+            
             if targetdirname == 'lp':
                 ## overriding targetdir with lp-shortcut:
                 logging.debug("targetdir-shortcut 'lp' (low prio) found")
                 targetdirname = make_sure_subdir_exists(os.getcwd(), 'lp')
+                
             elif targetdirname == 'rp':
                 ## overriding targetdir with rp-shortcut:
                 logging.debug("targetdir-shortcut 'rp' (Rohpanorama) found")
                 targetdirname = make_sure_subdir_exists(os.getcwd(), 'Rohpanoramas')
+                
+            elif number_of_suggestions > 0 and is_an_integer(targetdirname):
+                ## special shortcut: numbers within number_of_suggestions are for suggested directories
+                targetdirint = int(targetdirname)
+                if targetdirint <= number_of_suggestions and targetdirint > 0:
+                    global user_selected_suggested_directory
+                    user_selected_suggested_directory = True
+                    targetdirname = directory_suggestions[targetdirint - 1] # -1 fixes that we start from 1 instead of 0
+                    targetdirname = generate_absolute_target_dir(targetdirname, args, archivepath)
+                    logging.debug("user selected existing directory \"%s\"" % (targetdirname))
+                else:
+                    ## if number is not in range of suggestions, use it as folder name like below:
+                    targetdirname = generate_absolute_target_dir(targetdirname, args, archivepath)
+
             else:
                 targetdirname = generate_absolute_target_dir(targetdirname, args, archivepath)
     else:
@@ -347,6 +435,7 @@ def main():
     else:
         logging.debug("using no targetdir, sorting each item into %s/<YYYY>" % archivepath)
 
+    print '\n' ## make it more sexy
     for itemname in args:
         handle_item(itemname.strip(), archivepath, targetdirname)
 
