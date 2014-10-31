@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Time-stamp: <2013-10-11 15:34:15 vk>
+# Time-stamp: <2014-10-31 17:40:05 vk>
 
 import os
 import sys
@@ -59,7 +59,7 @@ If you feel uncomfortable you can simulate the behavior using the "--dryrun"
 option. You see what would happen without changing anything at all.
 
 
-:copyright: (c) 2011 by Karl Voit <tools@Karl-Voit.at>
+:copyright: (c) 2011 and later by Karl Voit <tools@Karl-Voit.at>
 :license: GPL v2 or any later version
 :bugreports: <tools@Karl-Voit.at>
 :version: {1} from {2}\n""".format(sys.argv[0], PROG_VERSION_NUMBER, PROG_VERSION_DATE)
