@@ -3,3 +3,4 @@ test
 test_orig
 reset_testdata.sh
 archivedirtest
+simple_test.sh
