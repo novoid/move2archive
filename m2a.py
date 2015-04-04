@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Time-stamp: <2015-04-04 21:21:14 vk>
+# Time-stamp: <2015-04-04 23:16:46 vk>
 
 import os
 import sys
@@ -264,7 +264,7 @@ def handle_item(itemname, archivepath, targetdir):
 
     if not os.path.exists(itemname):
         logging.error('item "%s" does not exist! Ignoring.' % itemname)
-    elif targetdir and options.targetdir:
+    elif targetdir:
         ## targetdir option is given and this directory is created before
         ## so just move items here:
         move_item(itemname, targetdir)
