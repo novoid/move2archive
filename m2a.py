@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Time-stamp: <2015-04-04 20:43:28 vk>
+# Time-stamp: <2015-04-04 21:21:14 vk>
 
 import os
 import sys
@@ -13,10 +13,10 @@ import fnmatch  # for searching matching directories
 
 ## TODO:
 ## * fix parts marked with «FIXXME»
-## * document "no target folder given" with askfordir (just like no askfordir)
+## * document "using default folder when no target folder given in interactive mode"
 
-PROG_VERSION_NUMBER = u"0.3"
-PROG_VERSION_DATE = u"2013-09-14"
+PROG_VERSION_NUMBER = u"0.4"
+PROG_VERSION_DATE = u"2015-04-04"
 
 ## better performance if ReEx is pre-compiled:
 
@@ -38,7 +38,7 @@ command line argument "--archivedir"). The convention is e.g.:
         <archivepath>/2010
         <archivepath>/2011
 
-Per default, this script extracts the year from the datestamp of
+By default, this script extracts the year from the datestamp of
 each file and moves it into the corresponding directory for its year:
 
      {0} 2010-01-01_Jan2010.txt 2011-02-02_Feb2011.txt
@@ -69,9 +69,8 @@ parser = OptionParser(usage=USAGE)
 parser.add_option("-d", "--directory", dest="targetdir",
                   help="name of a target directory that should be created (optionally add datestamp)", metavar="DIR")
 
-parser.add_option("--askfordirectory", dest="askfordir", action="store_true",
-                  help='similar to "-d" but tool asks for an input line when invoked. ' +
-                  'Shortcut: "rp" moves to folder named "Rohpanorama".')
+parser.add_option("--batchmode", dest="batchmode", action="store_true",
+                  help='suppress interactive asking for anything. ')
 
 parser.add_option("-a", "--append", dest="append", action="store_true",
                   help="if target directory already exists, append to it " +
@@ -265,7 +264,7 @@ def handle_item(itemname, archivepath, targetdir):
 
     if not os.path.exists(itemname):
         logging.error('item "%s" does not exist! Ignoring.' % itemname)
-    elif targetdir and (options.targetdir or options.askfordir):
+    elif targetdir and options.targetdir:
         ## targetdir option is given and this directory is created before
         ## so just move items here:
         move_item(itemname, targetdir)
@@ -364,9 +363,9 @@ def main():
         logging.warning('The "--append" options is only necessary in combination '
                         'with the "--directory" option. Ignoring this time.')
 
-    if options.targetdir and options.askfordir:
-        error_exit(8, 'Options "--directory" and "--askfordirectory" are mutual exclusive: '
-                      'use one at maximum.')
+    if options.batchmode and not options.targetdir:
+        error_exit(10, 'Option "--batchmode" requires "--directory": ' +
+                   'you need to tell me what to do in batchmode.')
 
     archivepath = None
     if options.archivepath:
@@ -386,7 +385,7 @@ def main():
     targetdirname = None
     if options.targetdir:
         targetdirname = generate_absolute_target_dir(options.targetdir, args, archivepath)
-    elif options.askfordir:
+    elif not options.batchmode:
 
         directory_suggestions = get_potential_target_directories(args, archivepath)
         number_of_suggestions = len(directory_suggestions)
@@ -397,7 +396,7 @@ def main():
         targetdirname = sys.stdin.readline().strip()
         if (not targetdirname):
             ## if no folder is given by the user, act like askfordir is not the case:
-            logging.debug("targetdirname was empty: acting, like --askfordir is not given")
+            logging.debug("targetdirname was empty: using default target folder")
             assert_each_item_has_datestamp(args)
         else:
 

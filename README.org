@@ -1,4 +1,4 @@
-## Time-stamp: <2014-11-08 14:09:08 vk>
+## Time-stamp: <2015-04-04 21:22:57 vk>
 ## -*- coding: utf-8 -*-
 ## This file is best viewed with GNU Emacs Org-mode: http://orgmode.org/
 
@@ -71,7 +71,7 @@ script does provide a shell window for entering the tags.
 :     --geometry=157x56+330+5  \
 :     --tab-with-profile=big \
 :     --hide-menubar \
-:     -x /home/vk/bin/m2a --pauseonexit --askfordir "${@}"
+:     -x /home/vk/bin/m2a --pauseonexit "${@}"
 : 
 : #end
 
