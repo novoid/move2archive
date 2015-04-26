@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Time-stamp: <2015-04-04 23:16:46 vk>
+# Time-stamp: <2015-04-26 18:04:53 vk>
 
 import os
 import sys
@@ -290,8 +290,11 @@ def get_potential_target_directories(args, archivepath):
     directories starting with the time-stamp (or similar) and returns the
     list of the directories."""
 
-    firstfile=args[0]
-    assert(os.path.exists(firstfile))
+    firstfile = args[0]
+
+    if not os.path.exists(firstfile):
+        error_exit(11, 'File/Folder "%s" does not exist! Aborting.' % firstfile)
+
     firstfile = os.path.basename(firstfile)
     assert_each_item_has_datestamp([firstfile])
 
