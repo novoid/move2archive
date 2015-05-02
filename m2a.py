@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Time-stamp: <2015-04-26 18:04:53 vk>
+# Time-stamp: <2015-05-02 16:19:06 vk>
 
 import os
 import sys
@@ -10,6 +10,7 @@ from optparse import OptionParser
 from datetime import datetime
 import shutil
 import fnmatch  # for searching matching directories
+import readline  # for raw_input() reading from stdin
 
 ## TODO:
 ## * fix parts marked with «FIXXME»
@@ -63,6 +64,9 @@ option. You see what would happen without changing anything at all.
 :license: GPL v2 or any later version
 :bugreports: <tools@Karl-Voit.at>
 :version: {1} from {2}\n""".format(sys.argv[0], PROG_VERSION_NUMBER, PROG_VERSION_DATE)
+
+FILENAME_COMPONENT_REGEX = re.compile("[a-zA-Z]+")
+FILENAME_COMPONENT_LOWERCASE_BLACKLIST = ['img', 'jpg', 'jpeg', 'png', 'bmp']
 
 parser = OptionParser(usage=USAGE)
 
@@ -123,6 +127,65 @@ def error_exit(errorcode, text):
         raw_input(PAUSEONEXITTEXT)
 
     sys.exit(errorcode)
+
+
+class SimpleCompleter(object):
+    ## happily stolen from http://pymotw.com/2/readline/
+
+    def __init__(self, options):
+        self.options = sorted(options)
+        return
+
+    def complete(self, text, state):
+        response = None
+        if state == 0:
+            # This is the first time for this text, so build a match list.
+            if text:
+                self.matches = [s
+                                for s in self.options
+                                if s and s.startswith(text)]
+                logging.debug('%s matches: %s', repr(text), self.matches)
+            else:
+                self.matches = self.options[:]
+                logging.debug('(empty input) matches: %s', self.matches)
+
+        # Return the state'th item from the match list,
+        # if we have that many.
+        try:
+            response = self.matches[state]
+        except IndexError:
+            response = None
+        logging.debug('complete(%s, %s) => %s',
+                      repr(text), state, repr(response))
+        return response
+
+
+def locate_and_parse_controlled_vocabulary():
+    """This method is looking for filenames in the current directory
+    and parses them. This results in a list of words which are used for tab completion.
+
+    @param return: either False or a list of found words (strings)
+
+    """
+
+    cv = []
+    files = [f for f in os.listdir('.') if os.path.isfile(f)]
+    for f in files:
+        ## extract all words from the file name that don't contain numbers
+        new_items = FILENAME_COMPONENT_REGEX.findall(os.path.splitext(os.path.basename(f))[0])
+        ## remove words that are too small
+        new_items = [item for item in new_items if len(item) > 1]
+        ## remove words that are listed in the blacklist
+        new_items = [item for item in new_items if item.lower() not in FILENAME_COMPONENT_LOWERCASE_BLACKLIST]
+        ## remove words that are already in the controlled vocabulary
+        new_items = [item for item in new_items if item not in cv]
+        ## append newly found words to the controlled vocabulary
+        cv.extend(new_items)
+
+    if len(cv) > 0:
+        return cv
+    else:
+        return False
 
 
 def extract_date(text):
@@ -395,8 +458,25 @@ def main():
         if number_of_suggestions > 0:
             print_potential_target_directories(directory_suggestions)
 
-        print "Please enter directory basename: "
-        targetdirname = sys.stdin.readline().strip()
+        ## parse file names for completion:
+        vocabulary = locate_and_parse_controlled_vocabulary()
+
+        if vocabulary:
+
+            assert(vocabulary.__class__ == list)
+
+            # Register our completer function
+            readline.set_completer(SimpleCompleter(vocabulary).complete)
+
+            # Use the tab key for completion
+            readline.parse_and_bind('tab: complete')
+
+            tabcompletiondescription = '; complete ' + str(len(vocabulary)) + ' words with TAB'
+
+        print '         (abort with Ctrl-C' + tabcompletiondescription + ')'
+        print
+        targetdirname = unicode(raw_input('Please enter directory basename: ').strip(), "UTF-8")
+
         if (not targetdirname):
             ## if no folder is given by the user, act like askfordir is not the case:
             logging.debug("targetdirname was empty: using default target folder")
