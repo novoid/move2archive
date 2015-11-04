@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Time-stamp: <2015-05-02 16:19:06 vk>
+# Time-stamp: <2015-11-04 22:13:47 vk>
 
 import os
 import sys
@@ -15,6 +15,7 @@ import readline  # for raw_input() reading from stdin
 ## TODO:
 ## * fix parts marked with «FIXXME»
 ## * document "using default folder when no target folder given in interactive mode"
+## * get_potential_target_directories(): list also folders with datestamps of 1-2 days before
 
 PROG_VERSION_NUMBER = u"0.4"
 PROG_VERSION_DATE = u"2015-04-04"
@@ -473,7 +474,9 @@ def main():
 
             tabcompletiondescription = '; complete ' + str(len(vocabulary)) + ' words with TAB'
 
-        print '         (abort with Ctrl-C' + tabcompletiondescription + ')'
+            print '         (abort with Ctrl-C' + tabcompletiondescription + ')'
+        else:
+            print '         (abort with Ctrl-C)'
         print
         targetdirname = unicode(raw_input('Please enter directory basename: ').strip(), "UTF-8")
 
