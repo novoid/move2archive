@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Time-stamp: <2015-11-04 22:13:47 vk>
+# Time-stamp: <2016-01-06 10:24:10 vk>
 
 import os
 import sys
@@ -364,7 +364,8 @@ def get_potential_target_directories(args, archivepath):
 
     item_date = extract_date(firstfile)
     yearfolder = os.path.join(archivepath, str(item_date.year))
-    assert(os.path.exists(yearfolder))
+    if not os.path.exists(yearfolder):
+        error_exit(12, 'Folder for year "%s" does not exist! Aborting.' % str(yearfolder))
 
     ## existing yearfolder found; looking for matching subfolders:
     logging.debug("looking for potential existing target folders for file \"%s\" in folder \"%s\"" % (firstfile, yearfolder))
