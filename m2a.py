@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Time-stamp: <2016-01-06 10:24:10 vk>
+# Time-stamp: <2016-02-27 14:30:46 vk>
 
 import os
 import sys
@@ -17,8 +17,8 @@ import readline  # for raw_input() reading from stdin
 ## * document "using default folder when no target folder given in interactive mode"
 ## * get_potential_target_directories(): list also folders with datestamps of 1-2 days before
 
-PROG_VERSION_NUMBER = u"0.4"
-PROG_VERSION_DATE = u"2015-04-04"
+PROG_VERSION_NUMBER = u"0.4.1"
+PROG_VERSION_DATE = u"2016-02-27"
 
 ## better performance if ReEx is pre-compiled:
 
@@ -303,15 +303,25 @@ def get_year_from_itemname(itemname):
         error_exit(7, 'item "%s" should have a valid datestamp in it. '
                       'Should have been checked before, internal error :-(' % str(itemname))
 
+def pretty_print_move_item_information(item, destination):
+    """prints a nice screen output of item and target destination"""
+
+    assert(type(item) == unicode or type(item) == str)
+    assert(type(destination) == unicode or type(destination) == str)
+
+    if len(item)+len(destination) < 80:
+        print u'• %s  →  %s\n' % (item, destination)
+    else:
+        print u'• %s\n  →  %s\n' % (item, destination)
+
 
 def move_item(item, destination):
     """move an item to the destination directory"""
 
-    if options.dryrun:
-        print 'moving: "%s"  -->   "%s"' % (item, destination)
-    elif os.path.isdir(destination):
+    pretty_print_move_item_information(item, destination)
+
+    if not options.dryrun and os.path.isdir(destination):
         try:
-            print 'moving: "%s"  -->   "%s"' % (item, destination)
             shutil.move(item, destination)
         except IOError, detail:
             error_exit(5, 'Cannot move "%s" to "%s". Aborting.\n%s' % (item, destination, detail))
