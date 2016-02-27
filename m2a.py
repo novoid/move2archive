@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Time-stamp: <2016-02-27 14:30:46 vk>
+# Time-stamp: <2016-02-27 14:33:21 vk>
 
 import os
 import sys
@@ -320,13 +320,14 @@ def move_item(item, destination):
 
     pretty_print_move_item_information(item, destination)
 
-    if not options.dryrun and os.path.isdir(destination):
-        try:
-            shutil.move(item, destination)
-        except IOError, detail:
-            error_exit(5, 'Cannot move "%s" to "%s". Aborting.\n%s' % (item, destination, detail))
-    else:
-        error_exit(6, 'Destination directory "%s" does not exist! Aborting.' % destination)
+    if not options.dryrun:
+        if os.path.isdir(destination):
+            try:
+                shutil.move(item, destination)
+            except IOError, detail:
+                error_exit(5, 'Cannot move "%s" to "%s". Aborting.\n%s' % (item, destination, detail))
+        else:
+            error_exit(6, 'Destination directory "%s" does not exist! Aborting.' % destination)
 
 
 def handle_item(itemname, archivepath, targetdir):
