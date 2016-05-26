@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Time-stamp: <2016-02-27 14:33:21 vk>
+# Time-stamp: <2016-05-26 12:55:21 vk>
 
 import os
 import sys
@@ -310,9 +310,14 @@ def pretty_print_move_item_information(item, destination):
     assert(type(destination) == unicode or type(destination) == str)
 
     if len(item)+len(destination) < 80:
-        print u'• %s  →  %s\n' % (item, destination)
+        in_between_linebreak = u'\n'
     else:
-        print u'• %s\n  →  %s\n' % (item, destination)
+        in_between_linebreak = u''
+
+        try:
+            print u'• %s%s  →  %s\n' % (item, in_between_linebreak, destination)
+        except:
+            print u'- %s%s  ->  %s\n' % (item.encode('latin-1', 'ignore'), in_between_linebreak, destination.encode('latin-1', 'ignore'))
 
 
 def move_item(item, destination):
