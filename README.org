@@ -1,10 +1,10 @@
-## Time-stamp: <2015-04-04 21:22:57 vk>
+## Time-stamp: <2016-08-29 18:10:28 karl.voit>
 ## -*- coding: utf-8 -*-
 ## This file is best viewed with GNU Emacs Org-mode: http://orgmode.org/
 
 * m2a.py
 
-This script moves items (files or directories) containing ISO datestamps 
+This script moves items (files or directories) containing ISO datestamps
 like ~YYYY-MM-DD~ into a directory stucture for the corresponding year.
 
 You define the base directory either in this script (or using the
@@ -66,13 +66,13 @@ script does provide a shell window for entering the tags.
 
 ~vk-m2a-wrapper-with-gnome-terminal.sh~ looks like:
 : #!/bin/sh
-: 
+:
 : /usr/bin/gnome-terminal \
 :     --geometry=157x56+330+5  \
 :     --tab-with-profile=big \
 :     --hide-menubar \
 :     -x /home/vk/bin/m2a --pauseonexit "${@}"
-: 
+:
 : #end
 
 In ~$HOME/.config/geeqie/applications~ I wrote a desktop file such
@@ -129,12 +129,17 @@ Files containing an ISO time/date-stamp gets indexed by the
 filename-module of [[https://github.com/novoid/Memacs][Memacs]].
 
 
-* Contribute!
+* How to Thank Me
 
-I am looking for your ideas!
+I'm glad you like my tools. If you want to support me:
 
-If you want to contribute to this cool project, please fork and
-contribute!
+- Send old-fashioned *postcard* per snailmail - I love personal feedback!
+  - see [[http://tinyurl.com/j6w8hyo][my address]]
+- Send feature wishes or improvements as an issue on GitHub
+- Create issues on GitHub for bugs
+- Contribute merge requests for bug fixes
+- Check out my other cool [[https://github.com/novoid][projects on GitHub]]
+
 
 
 * Local Variables                                                  :noexport:
