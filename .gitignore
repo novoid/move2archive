@@ -4,3 +4,7 @@ test_orig
 reset_testdata.sh
 archivedirtest
 simple_test.sh
+.gitignore
+setup.py
+MANIFEST
+dist

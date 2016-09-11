@@ -1,4 +1,4 @@
-## Time-stamp: <2016-08-29 18:10:28 karl.voit>
+## Time-stamp: <2016-09-11 17:52:28 vk>
 ## -*- coding: utf-8 -*-
 ## This file is best viewed with GNU Emacs Org-mode: http://orgmode.org/
 
@@ -52,6 +52,10 @@ future-prove, platform-independent work-flow.
 This is the reason I came up with this method of organizing archive
 files (photographs, scanned PDF files, memories, ...) in such a
 folder structure.
+
+** Installation
+
+Get it from [[https://github.com/novoid/move2archive][GitHub]] or install it via «pip install move2archive».
 
 ** Bonus: integrating into Geeqie (or similar file browsers)
 
