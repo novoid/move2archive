@@ -1,6 +1,6 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Time-stamp: <2016-05-26 12:55:21 vk>
+PROG_VERSION = u"Time-stamp: <2017-08-22 12:09:12 vk>"
 
 import os
 import sys
@@ -12,22 +12,19 @@ import shutil
 import fnmatch  # for searching matching directories
 import readline  # for raw_input() reading from stdin
 
-## TODO:
-## * fix parts marked with «FIXXME»
-## * document "using default folder when no target folder given in interactive mode"
-## * get_potential_target_directories(): list also folders with datestamps of 1-2 days before
+# TODO:
+# * fix parts marked with «FIXXME»
+# * document "using default folder when no target folder given in interactive mode"
+# * get_potential_target_directories(): list also folders with datestamps of 1-2 days before
 
-PROG_VERSION_NUMBER = u"0.4.1"
-PROG_VERSION_DATE = u"2016-02-27"
+# better performance if ReEx is pre-compiled:
 
-## better performance if ReEx is pre-compiled:
-
-## search for: «YYYY-MM-DD»
+# search for: «YYYY-MM-DD»
 DATESTAMP_REGEX = re.compile("\d\d\d\d-[01]\d-[0123]\d")
 DEFAULT_ARCHIVE_PATH = os.path.join(os.path.expanduser("~"), "archive", "events_memories")
 PAUSEONEXITTEXT = "    press <Enter> to quit"
 
-USAGE = u"""
+USAGE = """
     {0} <options> <file(s)>
 
 This script moves items (files or directories) containing ISO datestamps
@@ -64,7 +61,7 @@ option. You see what would happen without changing anything at all.
 :copyright: (c) 2011 and later by Karl Voit <tools@Karl-Voit.at>
 :license: GPL v2 or any later version
 :bugreports: <tools@Karl-Voit.at>
-:version: {1} from {2}\n""".format(sys.argv[0], PROG_VERSION_NUMBER, PROG_VERSION_DATE)
+:version: {1} \n""".format(sys.argv[0], PROG_VERSION)
 
 FILENAME_COMPONENT_REGEX = re.compile("[a-zA-Z]+")
 FILENAME_COMPONENT_LOWERCASE_BLACKLIST = ['img', 'jpg', 'jpeg', 'png', 'bmp']
@@ -86,8 +83,8 @@ parser.add_option("--archivepath", dest="archivepath",
                        'subdirectory per year. DEFAULT is currently "%s" (which can be modified '
                        'in "%s")' % (DEFAULT_ARCHIVE_PATH, sys.argv[0]), metavar="DIR")
 
-## parser.add_option("-b", "--batch", dest="batchmode", action="store_true",
-##                   help="Do not ask for user interaction (at the end of the process)")
+# parser.add_option("-b", "--batch", dest="batchmode", action="store_true",
+#                   help="Do not ask for user interaction (at the end of the process)")
 
 parser.add_option("--dryrun", dest="dryrun", action="store_true",
                   help="Does not make any changes to the file system. Useful for testing behavior.")
@@ -125,13 +122,13 @@ def error_exit(errorcode, text):
     logging.error(text)
 
     if options.dryrun or options.pauseonexit:
-        raw_input(PAUSEONEXITTEXT)
+        input(PAUSEONEXITTEXT)
 
     sys.exit(errorcode)
 
 
 class SimpleCompleter(object):
-    ## happily stolen from http://pymotw.com/2/readline/
+    # happily stolen from http://pymotw.com/2/readline/
 
     def __init__(self, options):
         self.options = sorted(options)
@@ -172,15 +169,15 @@ def locate_and_parse_controlled_vocabulary():
     cv = []
     files = [f for f in os.listdir('.') if os.path.isfile(f)]
     for f in files:
-        ## extract all words from the file name that don't contain numbers
+        # extract all words from the file name that don't contain numbers
         new_items = FILENAME_COMPONENT_REGEX.findall(os.path.splitext(os.path.basename(f))[0])
-        ## remove words that are too small
+        # remove words that are too small
         new_items = [item for item in new_items if len(item) > 1]
-        ## remove words that are listed in the blacklist
+        # remove words that are listed in the blacklist
         new_items = [item for item in new_items if item.lower() not in FILENAME_COMPONENT_LOWERCASE_BLACKLIST]
-        ## remove words that are already in the controlled vocabulary
+        # remove words that are already in the controlled vocabulary
         new_items = [item for item in new_items if item not in cv]
-        ## append newly found words to the controlled vocabulary
+        # append newly found words to the controlled vocabulary
         cv.extend(new_items)
 
     if len(cv) > 0:
@@ -295,7 +292,7 @@ def make_sure_subdir_exists(currentdir, subdir):
 def get_year_from_itemname(itemname):
     """extract year from item string"""
 
-    ## assert: main() makes sure that each item has datestamp!
+    # assert: main() makes sure that each item has datestamp!
     components = re.search(DATESTAMP_REGEX, os.path.basename(itemname))
     try:
         return datetime.strptime(components.group(), "%Y-%m-%d").year
@@ -303,21 +300,22 @@ def get_year_from_itemname(itemname):
         error_exit(7, 'item "%s" should have a valid datestamp in it. '
                       'Should have been checked before, internal error :-(' % str(itemname))
 
+
 def pretty_print_move_item_information(item, destination):
     """prints a nice screen output of item and target destination"""
 
-    assert(type(item) == unicode or type(item) == str)
-    assert(type(destination) == unicode or type(destination) == str)
+    assert(type(item) == str)
+    assert(type(destination) == str)
 
     if len(item)+len(destination) < 80:
-        in_between_linebreak = u'\n'
+        in_between_linebreak = '\n'
     else:
-        in_between_linebreak = u''
+        in_between_linebreak = ''
 
         try:
-            print u'• %s%s  →  %s\n' % (item, in_between_linebreak, destination)
+            print('• %s%s  →  %s\n' % (item, in_between_linebreak, destination))
         except:
-            print u'- %s%s  ->  %s\n' % (item.encode('latin-1', 'ignore'), in_between_linebreak, destination.encode('latin-1', 'ignore'))
+            print('- %s%s  ->  %s\n' % (item.encode('latin-1', 'ignore'), in_between_linebreak, destination.encode('latin-1', 'ignore')))
 
 
 def move_item(item, destination):
@@ -329,7 +327,7 @@ def move_item(item, destination):
         if os.path.isdir(destination):
             try:
                 shutil.move(item, destination)
-            except IOError, detail:
+            except IOError as detail:
                 error_exit(5, 'Cannot move "%s" to "%s". Aborting.\n%s' % (item, destination, detail))
         else:
             error_exit(6, 'Destination directory "%s" does not exist! Aborting.' % destination)
@@ -345,11 +343,11 @@ def handle_item(itemname, archivepath, targetdir):
     if not os.path.exists(itemname):
         logging.error('item "%s" does not exist! Ignoring.' % itemname)
     elif targetdir:
-        ## targetdir option is given and this directory is created before
-        ## so just move items here:
+        # targetdir option is given and this directory is created before
+        # so just move items here:
         move_item(itemname, targetdir)
     else:
-        ## find the correct <YYYY> subdirectory for each item:
+        # find the correct <YYYY> subdirectory for each item:
         year = get_year_from_itemname(itemname)
         logging.debug('extracted year "%d" from item "%s"' % (year, itemname))
         destination = os.path.join(archivepath, str(year))
@@ -383,7 +381,7 @@ def get_potential_target_directories(args, archivepath):
     if not os.path.exists(yearfolder):
         error_exit(12, 'Folder for year "%s" does not exist! Aborting.' % str(yearfolder))
 
-    ## existing yearfolder found; looking for matching subfolders:
+    # existing yearfolder found; looking for matching subfolders:
     logging.debug("looking for potential existing target folders for file \"%s\" in folder \"%s\"" % (firstfile, yearfolder))
     datestamp = firstfile[0:10]
     pattern = datestamp + '*'
@@ -391,7 +389,6 @@ def get_potential_target_directories(args, archivepath):
 
     for root, dirs, files in os.walk(yearfolder):
         for directory in fnmatch.filter(dirs, pattern):
-            #print( os.path.join(root, filename))
             logging.debug("found matching folder \"%s\"" % (directory))
             directory_suggestions.append(directory)
     logging.debug("found %i potential directory suggestions" % (len(directory_suggestions)))
@@ -406,16 +403,16 @@ def print_potential_target_directories(directory_suggestions):
     assert(number_of_suggestions > 0)
 
     if number_of_suggestions > 1:
-        print '\n ' + str(number_of_suggestions) + \
-            ' matching target directories found. Enter its number if you want to use one of it:'
+        print('\n ' + str(number_of_suggestions) +
+              ' matching target directories found. Enter its number if you want to use one of it:')
     else:
-        print '\n One matching target directory found. Enter "1" if you want to use it:'
+        print('\n One matching target directory found. Enter "1" if you want to use it:')
 
     index = 1  # caution: for usability purposes, we do not start with 0 here!
     for directory in directory_suggestions:
-        print '  [' + str(index) + ']  ' + directory
+        print('  [' + str(index) + ']  ' + directory)
         index += 1
-    print '\n'
+    print('\n')
 
     return
 
@@ -433,7 +430,7 @@ def main():
     """Main function"""
 
     if options.version:
-        print "%s version %s from %s" % (os.path.basename(sys.argv[0]), PROG_VERSION_NUMBER, PROG_VERSION_DATE)
+        print("%s version %s" % (os.path.basename(sys.argv[0]), PROG_VERSION))
         sys.exit(0)
 
     handle_logging()
@@ -476,7 +473,7 @@ def main():
         if number_of_suggestions > 0:
             print_potential_target_directories(directory_suggestions)
 
-        ## parse file names for completion:
+        # parse file names for completion:
         vocabulary = locate_and_parse_controlled_vocabulary()
 
         if vocabulary:
@@ -491,30 +488,30 @@ def main():
 
             tabcompletiondescription = '; complete ' + str(len(vocabulary)) + ' words with TAB'
 
-            print '         (abort with Ctrl-C' + tabcompletiondescription + ')'
+            print('         (abort with Ctrl-C' + tabcompletiondescription + ')\n')
         else:
-            print '         (abort with Ctrl-C)'
-        print
-        targetdirname = unicode(raw_input('Please enter directory basename: ').strip(), "UTF-8")
+            print('         (abort with Ctrl-C)\n')
+
+        targetdirname = str(input('Please enter directory basename: ')).strip()
 
         if (not targetdirname):
-            ## if no folder is given by the user, act like askfordir is not the case:
+            # if no folder is given by the user, act like askfordir is not the case:
             logging.debug("targetdirname was empty: using default target folder")
             assert_each_item_has_datestamp(args)
         else:
 
             if targetdirname == 'lp':
-                ## overriding targetdir with lp-shortcut:
+                # overriding targetdir with lp-shortcut:
                 logging.debug("targetdir-shortcut 'lp' (low prio) found")
                 targetdirname = make_sure_subdir_exists(os.getcwd(), 'lp')
 
             elif targetdirname == 'rp':
-                ## overriding targetdir with rp-shortcut:
+                # overriding targetdir with rp-shortcut:
                 logging.debug("targetdir-shortcut 'rp' (Rohpanorama) found")
                 targetdirname = make_sure_subdir_exists(os.getcwd(), 'Rohpanoramas')
 
             elif number_of_suggestions > 0 and is_an_integer(targetdirname):
-                ## special shortcut: numbers within number_of_suggestions are for suggested directories
+                # special shortcut: numbers within number_of_suggestions are for suggested directories
                 targetdirint = int(targetdirname)
                 if targetdirint <= number_of_suggestions and targetdirint > 0:
                     global user_selected_suggested_directory
@@ -523,7 +520,7 @@ def main():
                     targetdirname = generate_absolute_target_dir(targetdirname, args, archivepath)
                     logging.debug("user selected existing directory \"%s\"" % (targetdirname))
                 else:
-                    ## if number is not in range of suggestions, use it as folder name like below:
+                    # if number is not in range of suggestions, use it as folder name like below:
                     targetdirname = generate_absolute_target_dir(targetdirname, args, archivepath)
 
             else:
@@ -536,14 +533,15 @@ def main():
     else:
         logging.debug("using no targetdir, sorting each item into %s/<YYYY>" % archivepath)
 
-    print '\n'  # make it more sexy
+    print('\n')  # make it more sexy
     for itemname in args:
         handle_item(itemname.strip(), archivepath, targetdirname)
 
     logging.debug("successfully processed all items.")
 
     if options.dryrun or options.pauseonexit:
-        raw_input(PAUSEONEXITTEXT)
+        input(PAUSEONEXITTEXT)
+
 
 if __name__ == "__main__":
     try:
@@ -552,6 +550,5 @@ if __name__ == "__main__":
 
         logging.info("Received KeyboardInterrupt")
 
-## END OF FILE #################################################################
-
-#end
+# END OF FILE #################################################################
+# end
