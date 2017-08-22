@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-PROG_VERSION = u"Time-stamp: <2017-08-22 12:09:12 vk>"
+PROG_VERSION = u"Time-stamp: <2017-08-22 12:48:13 vk>"
 
 import os
 import sys
@@ -23,6 +23,7 @@ import readline  # for raw_input() reading from stdin
 DATESTAMP_REGEX = re.compile("\d\d\d\d-[01]\d-[0123]\d")
 DEFAULT_ARCHIVE_PATH = os.path.join(os.path.expanduser("~"), "archive", "events_memories")
 PAUSEONEXITTEXT = "    press <Enter> to quit"
+PROG_VERSION_DATE = PROG_VERSION[13:23]
 
 USAGE = """
     {0} <options> <file(s)>
@@ -61,7 +62,7 @@ option. You see what would happen without changing anything at all.
 :copyright: (c) 2011 and later by Karl Voit <tools@Karl-Voit.at>
 :license: GPL v2 or any later version
 :bugreports: <tools@Karl-Voit.at>
-:version: {1} \n""".format(sys.argv[0], PROG_VERSION)
+:version: {1} \n""".format(sys.argv[0], PROG_VERSION_DATE)
 
 FILENAME_COMPONENT_REGEX = re.compile("[a-zA-Z]+")
 FILENAME_COMPONENT_LOWERCASE_BLACKLIST = ['img', 'jpg', 'jpeg', 'png', 'bmp']
@@ -430,7 +431,7 @@ def main():
     """Main function"""
 
     if options.version:
-        print("%s version %s" % (os.path.basename(sys.argv[0]), PROG_VERSION))
+        print("%s version %s" % (os.path.basename(sys.argv[0]), PROG_VERSION_DATE))
         sys.exit(0)
 
     handle_logging()
