@@ -8,3 +8,5 @@ simple_test.sh
 setup.py
 MANIFEST
 dist
+update_pip.sh
+.gitignore

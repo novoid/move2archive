@@ -1,7 +1,3 @@
-## Time-stamp: <2016-09-11 17:52:28 vk>
-## -*- coding: utf-8 -*-
-## This file is best viewed with GNU Emacs Org-mode: http://orgmode.org/
-
 * m2a.py
 
 This script moves items (files or directories) containing ISO datestamps
@@ -17,7 +13,7 @@ command line argument ~--archivedir~). The convention is, e.g.:
 This script extracts the year from the datestamp of each file and
 moves it into the corresponding directory for its year:
 
-: ./m2a.py 2010-01-01_Jan2010.txt 2011-02-02_Feb2011.txt
+: m2a 2010-01-01_Jan2010.txt 2011-02-02_Feb2011.txt
 ... moves ~2010-01-01_Jan2010.txt~ to ~<archivepath>/2010/~
 ... moves ~2011-02-02_Feb2011.txt~ to ~<archivepath>/2011/~
 
@@ -25,10 +21,10 @@ OPTIONALLY: you can define a sub-directory name with option ~-d DIR~. If it
 contains no datestamp by itself, a datestamp from the first file of the
 argument list will be used. This datestamp will be put in front of the name:
 
-: ./m2a.py  -d "2009-02-15 bar"  one two three
+: m2a  -d "2009-02-15 bar"  one two three
 ... moves all items to: ~<archivepath>/2009/2009-02-15 bar/~
 
-: ./m2a.py  -d bar  2011-10-10_one 2008-01-02_two 2011-10-12_three
+: m2a  -d bar  2011-10-10_one 2008-01-02_two 2011-10-12_three
 ... moves all items to: ~<archivepath>/2011/2011-10-10 bar/~
 
 If you feel uncomfortable you can simulate the behavior using the ~--dryrun~
