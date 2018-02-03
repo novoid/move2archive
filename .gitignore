@@ -10,3 +10,5 @@ MANIFEST
 dist
 update_pip.sh
 .gitignore
+build/
+move2archive.egg-info/
