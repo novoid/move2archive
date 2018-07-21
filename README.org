@@ -69,7 +69,6 @@ script does provide a shell window for entering the tags.
 :
 : /usr/bin/gnome-terminal \
 :     --geometry=157x56+330+5  \
-:     --tab-with-profile=big \
 :     --hide-menubar \
 :     -x /home/vk/bin/m2a --pauseonexit "${@}"
 :
