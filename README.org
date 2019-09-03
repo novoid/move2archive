@@ -133,6 +133,10 @@ for file management:
 
 [[https://media.ccc.de/v/GLT18_-_321_-_en_-_g_ap147_004_-_201804281550_-_the_advantages_of_file_name_conventions_and_tagging_-_karl_voit/][bin/2018-05-06 filetags demo slide for video preview with video button -- screenshots.png]]
 
+Other projects with similar features:
+
+- https://github.com/velvet-jones/imgfiler/
+
 * How to Thank Me
 
 I'm glad you like my tools. If you want to support me:
