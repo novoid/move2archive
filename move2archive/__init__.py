@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-PROG_VERSION = u"Time-stamp: <2022-01-04 14:56:33 vk>"
+PROG_VERSION = u"Time-stamp: <2022-01-04 15:15:14 vk>"
 
 import os
 import sys
@@ -16,6 +16,7 @@ import readline  # for raw_input() reading from stdin
 # * fix parts marked with «FIXXME»
 # * document "using default folder when no target folder given in interactive mode"
 # * get_potential_target_directories(): list also folders with datestamps of 1-2 days before
+# * think of documenting HIDDEN FEATURES marked below
 
 # better performance if ReEx is pre-compiled:
 
@@ -505,12 +506,12 @@ def main():
         else:
 
             if targetdirname == 'lp':
-                # overriding targetdir with lp-shortcut:
+                # HIDDEN FEATURE: overriding targetdir with lp-shortcut:
                 logging.debug("targetdir-shortcut 'lp' (low prio) found")
                 targetdirname = make_sure_subdir_exists(os.getcwd(), 'lp')
 
             elif targetdirname == 'rp':
-                # overriding targetdir with rp-shortcut:
+                # HIDDEN FEATURE: overriding targetdir with rp-shortcut:
                 logging.debug("targetdir-shortcut 'rp' (Rohpanorama) found")
                 targetdirname = make_sure_subdir_exists(os.getcwd(), 'Rohpanoramas')
 
