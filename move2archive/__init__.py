@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-PROG_VERSION = u"Time-stamp: <2022-01-04 15:15:14 vk>"
+PROG_VERSION = u"Time-stamp: <2022-01-04 15:36:33 vk>"
 
 import os
 import sys
@@ -77,16 +77,17 @@ parser.add_option("-d", "--directory", dest="targetdir",
                   help="name of a target directory that should be created (optionally add datestamp)", metavar="DIR")
 
 parser.add_option("--batchmode", dest="batchmode", action="store_true",
-                  help='suppress interactive asking for anything. ')
+                  help='suppress interactive asking for anything. If no --directory is given, ' +
+                       'the DEFAULT + year of the date-stamp within the file name is used:' +
+                       '"%s" (which can be modified in "%s")' % (DEFAULT_ARCHIVE_PATH, sys.argv[0]))
 
 parser.add_option("-a", "--append", dest="append", action="store_true",
                   help="if target directory already exists, append to it " +
                        "instead of aborting.")
 
 parser.add_option("--archivepath", dest="archivepath",
-                  help='overwrite the default archive base directory which contains one '
-                       'subdirectory per year. DEFAULT is currently "%s" (which can be modified '
-                       'in "%s")' % (DEFAULT_ARCHIVE_PATH, sys.argv[0]), metavar="DIR")
+                  help='overwrite the default archive base directory which contains one ' +
+                       'subdirectory per year. DEFAULT is currently "%s" (which can be modified in "%s")' % (DEFAULT_ARCHIVE_PATH, sys.argv[0]), metavar="DIR")
 
 # parser.add_option("-b", "--batch", dest="batchmode", action="store_true",
 #                   help="Do not ask for user interaction (at the end of the process)")
@@ -449,9 +450,9 @@ def main():
         logging.warning('The "--append" options is only necessary in combination '
                         'with the "--directory" option. Ignoring this time.')
 
-    if options.batchmode and not options.targetdir:
-        error_exit(10, 'Option "--batchmode" requires "--directory": ' +
-                   'you need to tell me what to do in batchmode.')
+#    if options.batchmode and not options.targetdir:
+#        error_exit(10, 'Option "--batchmode" requires "--directory": ' +
+#                   'you need to tell me what to do in batchmode.')
 
     archivepath = None
     if options.archivepath:
