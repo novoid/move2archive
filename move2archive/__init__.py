@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-PROG_VERSION = u"Time-stamp: <2017-08-22 12:48:13 vk>"
+PROG_VERSION = u"Time-stamp: <2022-01-04 14:56:33 vk>"
 
 import os
 import sys
@@ -21,7 +21,10 @@ import readline  # for raw_input() reading from stdin
 
 # search for: «YYYY-MM-DD»
 DATESTAMP_REGEX = re.compile("\d\d\d\d-[01]\d-[0123]\d")
+
+# this setting is highly specific for the current user and most probably needs adaptation:
 DEFAULT_ARCHIVE_PATH = os.path.join(os.path.expanduser("~"), "archive", "events_memories")
+
 PAUSEONEXITTEXT = "    press <Enter> to quit"
 PROG_VERSION_DATE = PROG_VERSION[13:23]
 
