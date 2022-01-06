@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-PROG_VERSION = u"Time-stamp: <2022-01-04 15:36:33 vk>"
+PROG_VERSION = u"Time-stamp: <2022-01-06 11:33:54 vk>"
 
 import os
 import sys
@@ -318,10 +318,10 @@ def pretty_print_move_item_information(item, destination):
     else:
         in_between_linebreak = ''
 
-        try:
-            print('• %s%s  →  %s\n' % (item, in_between_linebreak, destination))
-        except:
-            print('- %s%s  ->  %s\n' % (item.encode('latin-1', 'ignore'), in_between_linebreak, destination.encode('latin-1', 'ignore')))
+    try:
+        print('• %s%s  →  %s\n' % (item, in_between_linebreak, destination))
+    except:
+        print('- %s%s  ->  %s\n' % (item.encode('latin-1', 'ignore'), in_between_linebreak, destination.encode('latin-1', 'ignore')))
 
 
 def move_item(item, destination):
