@@ -53,6 +53,51 @@ folder structure.
 
 Get it from [[https://github.com/novoid/move2archive][GitHub]] or install it via «pip install move2archive».
 
+** Interactive Use
+:PROPERTIES:
+:CREATED:  [2022-01-06 Thu 11:34]
+:END:
+
+If you are using =m2a= in an interactive way, you need to know the
+following behavior difference when you (1) provide a target directory
+and (2) when no specific target directory is provided by you.
+
+Let's use two example files:
+- =2020-07-13T13.55 xkcd about PIM.png=
+- =2022-01-06 screenshot of my editor.png=
+
+Now let's assume those two files are the only ones in the current
+directory and the following command line you're using: =m2a *png=
+
+First, let's take a look at the version *(1) where you select or enter
+a target directory* to file to: When asked "Please enter directory
+basename:" in the interactive prompt you're entering "some images".
+
+This will result in *both* files moved to the one target directory
+where the oldest date-stamp is used to determine the year:
+
+- =<archivepath>/2020/2020-07-13 some images/2020-07-13T13.55 xkcd about PIM.png=. 
+- =<archivepath>/2020/2020-07-13 some images/2022-01-06 screenshot of my editor.png=. 
+
+This is because the files are grouped together to be filed to the same
+spot when one single target directory is given.
+
+Now, let's compare with *(2) when no target directory is given*. This
+time, you do not enter anything in the target directory prompt and you
+do not select a proposed target by entering a numeric shortcut.
+
+This will result in each file moved to its corresponding yearly archive directory:
+
+- =<archivepath>/2020/2020-07-13T13.55 xkcd about PIM.png=
+- =<archivepath>/2022/2022-01-06 screenshot of my editor.png=
+
+The reasoning behind this behavior is that you can use =m2a= to file
+away a larger group of files to their yearly archive folders without
+the need of filing each one individually or writing a loop command.
+However, when you do provide one single target directory, this is used
+for all files, independent of their date-stamp (using the oldest
+date-stamp).
+
 ** Bonus: integrating into Geeqie (or similar file browsers)
 
 I am using [[http://geeqie.sourceforge.net/][geeqie]] for browsing/presenting image files. For quickly
