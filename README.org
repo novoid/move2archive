@@ -69,9 +69,13 @@ Let's use two example files:
 Now let's assume those two files are the only ones in the current
 directory and the following command line you're using: =m2a *png=
 
-First, let's take a look at the version *(1) where you select or enter
-a target directory* to file to: When asked "Please enter directory
-basename:" in the interactive prompt you're entering "some images".
+First, let's take a look at the version (1) where you select or enter
+a target directory to file to.
+
+*** Selecting a Target Directory
+
+When asked "Please enter directory basename:" in the interactive
+prompt you're entering "some images".
 
 This will result in *both* files moved to the one target directory
 where the oldest date-stamp is used to determine the year:
@@ -82,21 +86,46 @@ where the oldest date-stamp is used to determine the year:
 This is because the files are grouped together to be filed to the same
 spot when one single target directory is given.
 
-Now, let's compare with *(2) when no target directory is given*. This
-time, you do not enter anything in the target directory prompt and you
-do not select a proposed target by entering a numeric shortcut.
+A handy feature of =m2a= is that it suggest existing folders in the
+=archivepath=. So if you already do have a folder like
+=<archivepath>/2020/2020-07-13 interesting stuff/= and you call =m2a=
+with any file that starts with =2020-07-13...=, it shows a prompt
+like:
+
+: One matching target directory found. Enter "1" if you want to use it:
+:  [1]  2020-07-13 interesting stuff
+
+In the case you want to re-use this directory as the target directory
+for the current files , you simply enter =1= to the prompt and the
+files are moved to that directory. Isn't that handy?
+
+Now, let's compare with (2) when no target directory is given in the
+next section.
+
+*** Not Selecting a Target Directory
+
+This time, you do not enter anything in the target directory prompt
+and you do not select a proposed target by entering a numeric
+shortcut.
 
 This will result in each file moved to its corresponding yearly archive directory:
 
 - =<archivepath>/2020/2020-07-13T13.55 xkcd about PIM.png=
 - =<archivepath>/2022/2022-01-06 screenshot of my editor.png=
 
-The reasoning behind this behavior is that you can use =m2a= to file
-away a larger group of files to their yearly archive folders without
-the need of filing each one individually or writing a loop command.
+*** On the Difference of Behavior
+
+The reasoning behind this different behavior between a specific target
+directory is provided and not is that you can use =m2a= to file away a
+larger group of files to their yearly archive folders without the need
+of filing each one individually or writing a loop command. 
+
 However, when you do provide one single target directory, this is used
 for all files, independent of their date-stamp (using the oldest
 date-stamp).
+
+This might irritate at first but makes perfectly sense if you think
+about it or the alternatives.
 
 ** Bonus: integrating into Geeqie (or similar file browsers)
 
