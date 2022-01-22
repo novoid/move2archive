@@ -6,14 +6,18 @@ like ~YYYY-MM-DD~ into a directory stucture for the corresponding year.
 You define the base directory either in this script (or using the
 command line argument ~--archivedir~). The convention is, e.g.:
 
-: <archivepath>/2011
-: <archivepath>/2011/2011-12-20 Meeting Friends at Barleys
-: <archivepath>/2011/2011-12-20 Meeting Friends at Barleys/Tom with Beer.jpeg
+#+begin_src bash
+<archivepath>/2011
+<archivepath>/2011/2011-12-20 Meeting Friends at Barleys
+<archivepath>/2011/2011-12-20 Meeting Friends at Barleys/Tom with Beer.jpeg
+#+end_src
 
 This script extracts the year from the datestamp of each file and
 moves it into the corresponding directory for its year:
 
-: m2a 2010-01-01_Jan2010.txt 2011-02-02_Feb2011.txt
+#+begin_src bash
+m2a 2010-01-01_Jan2010.txt 2011-02-02_Feb2011.txt
+#+end_src
 ... moves ~2010-01-01_Jan2010.txt~ to ~<archivepath>/2010/~
 ... moves ~2011-02-02_Feb2011.txt~ to ~<archivepath>/2011/~
 
@@ -21,10 +25,14 @@ OPTIONALLY: you can define a sub-directory name with option ~-d DIR~. If it
 contains no datestamp by itself, a datestamp from the first file of the
 argument list will be used. This datestamp will be put in front of the name:
 
-: m2a  -d "2009-02-15 bar"  one two three
+#+begin_src bash
+m2a  -d "2009-02-15 bar"  one two three
+#+end_src
 ... moves all items to: ~<archivepath>/2009/2009-02-15 bar/~
 
-: m2a  -d bar  2011-10-10_one 2008-01-02_two 2011-10-12_three
+#+begin_src bash
+m2a  -d bar  2011-10-10_one 2008-01-02_two 2011-10-12_three
+#+end_src
 ... moves all items to: ~<archivepath>/2011/2011-10-10 bar/~
 
 If you feel uncomfortable you can simulate the behavior using the ~--dryrun~
@@ -65,32 +73,36 @@ is not straight forward is the need for a wrapper script. The wrapper
 script does provide a shell window for entering the tags.
 
 ~vk-m2a-wrapper-with-gnome-terminal.sh~ looks like:
-: #!/bin/sh
-:
-: /usr/bin/gnome-terminal \
-:     --geometry=157x56+330+5  \
-:     --hide-menubar \
-:     -x /home/vk/bin/m2a --pauseonexit "${@}"
-:
-: #end
+#+begin_src bash
+#!/bin/sh
+
+/usr/bin/gnome-terminal \
+    --geometry=157x56+330+5  \
+    --hide-menubar \
+    -x /home/vk/bin/m2a --pauseonexit "${@}"
+
+#end
+#+end_src
 
 In ~$HOME/.config/geeqie/applications~ I wrote a desktop file such
 that geeqie shows the wrapper script as external editor to its
 image files:
 
 ~$HOME/.config/geeqie/applications/m2a.desktop~ looks like:
-: [Desktop Entry]
-: Name=m2a
-: GenericName=m2a
-: Comment=
-: Exec=/home/vk/src/misc/vk-m2a-wrapper-with-gnome-terminal.sh %F
-: Icon=
-: Terminal=true
-: Type=Application
-: Categories=Application;Graphics;
-: hidden=false
-: MimeType=image/*;video/*;image/mpo;image/thm
-: Categories=X-Geeqie;
+#+begin_src bash
+[Desktop Entry]
+Name=m2a
+GenericName=m2a
+Comment=
+Exec=/home/vk/src/misc/vk-m2a-wrapper-with-gnome-terminal.sh %F
+Icon=
+Terminal=true
+Type=Application
+Categories=Application;Graphics;
+hidden=false
+MimeType=image/*;video/*;image/mpo;image/thm
+Categories=X-Geeqie;
+#+end_src
 
 In order to be able to use the keyboard shortcuts ~m~, you can define
 them in geeqie:
