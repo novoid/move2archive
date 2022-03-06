@@ -24,7 +24,7 @@ import readline  # for raw_input() reading from stdin
 DATESTAMP_REGEX = re.compile("\d\d\d\d-[01]\d-[0123]\d")
 
 # this setting is highly specific for the current user and most probably needs adaptation:
-DEFAULT_ARCHIVE_PATH = os.path.join(os.path.expanduser("~"), "archive", "events_memories")
+DEFAULT_ARCHIVE_PATH = os.path.join(os.path.expanduser("~"), "archive")
 
 PAUSEONEXITTEXT = "    press <Enter> to quit"
 PROG_VERSION_DATE = PROG_VERSION[13:23]
