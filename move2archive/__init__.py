@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-PROG_VERSION = u"Time-stamp: <2022-01-06 11:33:54 vk>"
+PROG_VERSION = u"Time-stamp: <2022-03-06 19:09:39 vk>"
 
 import os
 import sys
@@ -23,8 +23,13 @@ import readline  # for raw_input() reading from stdin
 # search for: «YYYY-MM-DD»
 DATESTAMP_REGEX = re.compile("\d\d\d\d-[01]\d-[0123]\d")
 
-# this setting is highly specific for the current user and most probably needs adaptation:
-DEFAULT_ARCHIVE_PATH = os.path.join(os.path.expanduser("~"), "archive", "events_memories")
+## this setting is highly specific for the current user and most probably needs adaptation:
+if os.path.isdir(os.path.join(os.path.expanduser("~"), "archive", "events_memories")):
+    ## this is the author's personal choice according to https://karl-voit.at/folder-hierarchy/
+    DEFAULT_ARCHIVE_PATH = os.path.join(os.path.expanduser("~"), "archive", "events_memories")
+else:
+    ## this is the more generic choice:
+    DEFAULT_ARCHIVE_PATH = os.path.join(os.path.expanduser("~"), "archive")
 
 PAUSEONEXITTEXT = "    press <Enter> to quit"
 PROG_VERSION_DATE = PROG_VERSION[13:23]
