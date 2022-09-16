@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-PROG_VERSION = u"Time-stamp: <2022-03-06 19:09:39 vk>"
+PROG_VERSION = u"Time-stamp: <2022-09-16 15:14:06 vk>"
 
 import os
 import sys
@@ -336,10 +336,13 @@ def move_item(item, destination):
 
     if not options.dryrun:
         if os.path.isdir(destination):
-            try:
-                shutil.move(item, destination)
-            except IOError as detail:
-                error_exit(5, 'Cannot move "%s" to "%s". Aborting.\n%s' % (item, destination, detail))
+            if os.path.exists(os.path.join(destination, item)):
+                logging.warning('Cannot move "%s" to "%s" because it alreay exists. Skipping.' % (item, destination))
+            else:
+                try:
+                    shutil.move(item, destination)
+                except IOError as detail:
+                    error_exit(5, 'Cannot move "%s" to "%s". Aborting.\n%s' % (item, destination, detail))
         else:
             error_exit(6, 'Destination directory "%s" does not exist! Aborting.' % destination)
 
