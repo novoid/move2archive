@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-PROG_VERSION = u"Time-stamp: <2022-09-18 17:04:19 vk>"
+PROG_VERSION = u"Time-stamp: <2022-09-18 17:12:06 vk>"
 
 import os
 import sys
@@ -336,8 +336,10 @@ def move_item(item, destination):
 
     if not options.dryrun:
         if os.path.isdir(destination):
-            if os.path.isfile(os.path.join(destination, item)):
-                logging.warning('Cannot move "%s" to "%s" because it alreay exists. Skipping.' % (item, destination))
+            basename = os.path.basename(item)
+            destinationfilename = os.path.join(destination, basename)
+            if os.path.isfile(destinationfilename):
+                logging.warning('Cannot move "%s" to "%s" because it already exists. Skipping.' % (item, destinationfilename))
             else:
                 try:
                     shutil.move(item, destination)
