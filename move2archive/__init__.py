@@ -395,7 +395,12 @@ def get_potential_target_directories(args, archivepath):
     item_date = extract_date(firstfile)
     yearfolder = os.path.join(archivepath, str(item_date.year))
     if not os.path.exists(yearfolder):
-        error_exit(12, 'Folder for year "%s" does not exist! Aborting.' % str(yearfolder))
+        new_year = str(os.path.join(archivepath, yearfolder))
+        try:
+            os.mkdir(new_year)
+        except IOError:
+            print('The creation of new folder "%s" failed.' % new_year)
+            sys.exit()
 
     # existing yearfolder found; looking for matching subfolders:
     logging.debug("looking for potential existing target folders for file \"%s\" in folder \"%s\"" % (firstfile, yearfolder))
