@@ -399,7 +399,8 @@ def get_potential_target_directories(args, archivepath):
         try:
             os.mkdir(new_year)
         except IOError:
-            print('Error in set up a folder about new year "%s".' % new_year)
+            print('The creation of new folder "%s" failed.' % new_year)
+            sys.exit()
 
     # existing yearfolder found; looking for matching subfolders:
     logging.debug("looking for potential existing target folders for file \"%s\" in folder \"%s\"" % (firstfile, yearfolder))
