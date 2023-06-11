@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-PROG_VERSION = u"Time-stamp: <2022-09-18 17:12:06 vk>"
+PROG_VERSION = u"Time-stamp: <2023-06-11 13:53:52 vk>"
 
 import os
 import sys
@@ -417,23 +417,86 @@ def get_potential_target_directories(args, archivepath):
     return directory_suggestions
 
 
-def print_potential_target_directories(directory_suggestions):
+def longestSubstringFinder(string1, string2):
+    ## this is from: https://stackoverflow.com/a/18717762
+    ## print(longestSubstringFinder("apple pie available", "apple pies")) ## apple pie
+    ## print(longestSubstringFinder("apples", "appleses")) ## apples
+    ## print(longestSubstringFinder("bapples", "cappleses")) ## apples
+    '''Its called Longest Common Substring problem. Here I present a
+    simple, easy to understand but inefficient solution. It will take
+    a long time to produce correct output for large strings, as the
+    complexity of this algorithm is O(N^2).''' 
+    answer = ""
+    len1, len2 = len(string1), len(string2)
+    for i in range(len1):
+        match = ""
+        for j in range(len2):
+            if (i + j < len1 and string1[i + j] == string2[j]):
+                match += string2[j]
+            else:
+                if (len(match) > len(answer)): answer = match
+                match = ""
+    return answer
+
+
+def startswith_datestamp(filename):
+    "returns true if a string starts with an ISO datestamp, false if not."
+    
+    components = re.search(DATESTAMP_REGEX, filename)
+    if components:
+        return True
+    else:
+        return False
+
+
+def guess_new_directory_basename(filename1, filename2):
+    """analyzes two filenames and tries to extract a potential archive directory name.
+    E.g., "2023-06-11T12.26.18 Wedding of Paula and John - Guests arriving.jpg"
+    with  "2023-06-11T13.05.48 Wedding of Paula and John - Ceremony starts.jpg"
+    results in: "Wedding of Paula and John"
+    """
+
+    # omit path and filename extensions:
+    file1 = os.path.basename(os.path.splitext(filename1)[0])
+    file2 = os.path.basename(os.path.splitext(filename2)[0])
+    
+    if startswith_datestamp(file1) and startswith_datestamp(file2):
+        # cut most probably identical datestamp to avoid false positive matchstring:
+        substring = longestSubstringFinder(file1[10:], file2[10:])
+    else:
+        substring = longestSubstringFinder(file1, file2)
+
+    if substring:
+        # delete any pre- or postfixes with a dash and space:
+        strippedsubstring = substring.replace(' -', '').replace('- ', '').strip()
+        if len(strippedsubstring) > 3:
+            # FIXXME assumption: a potential substring candidate for a directory name needs at least 4 characters.
+            return(strippedsubstring)
+    else:
+        return None    
+
+    
+def print_potential_target_directories(directory_suggestions, new_dir_basename_guess):
     """prints list of potential target directories with their shortcuts."""
 
     number_of_suggestions = len(directory_suggestions)
-    assert(number_of_suggestions > 0)
 
     if number_of_suggestions > 1:
         print('\n ' + str(number_of_suggestions) +
               ' matching target directories found. Enter its number if you want to use one of it:')
-    else:
+    elif number_of_suggestions == 1:
         print('\n One matching target directory found. Enter "1" if you want to use it:')
 
     index = 1  # caution: for usability purposes, we do not start with 0 here!
-    for directory in directory_suggestions:
-        print('  [' + str(index) + ']  ' + directory)
-        index += 1
-    print('\n')
+
+    if number_of_suggestions > 0:
+        for directory in directory_suggestions:
+            print('  [' + str(index) + ']  ' + directory)
+            index += 1
+        print('\n')
+
+    if new_dir_basename_guess:
+        print('  [' + str(index) + '] suggested new directory: ' + new_dir_basename_guess)
 
     return
 
@@ -490,9 +553,13 @@ def main():
     elif not options.batchmode:
 
         directory_suggestions = get_potential_target_directories(args, archivepath)
-        number_of_suggestions = len(directory_suggestions)
+        new_dir_basename_guess = guess_new_directory_basename(args[0], args[1])
+        if new_dir_basename_guess:
+            number_of_suggestions = len(directory_suggestions) + 1
+        else:
+            number_of_suggestions = len(directory_suggestions)
         if number_of_suggestions > 0:
-            print_potential_target_directories(directory_suggestions)
+            print_potential_target_directories(directory_suggestions, new_dir_basename_guess)
 
         # parse file names for completion:
         vocabulary = locate_and_parse_controlled_vocabulary()
@@ -537,8 +604,11 @@ def main():
                 if targetdirint <= number_of_suggestions and targetdirint > 0:
                     global user_selected_suggested_directory
                     user_selected_suggested_directory = True
-                    targetdirname = directory_suggestions[targetdirint - 1]  # -1 fixes that we start from 1 instead of 0
-                    targetdirname = generate_absolute_target_dir(targetdirname, args, archivepath)
+                    if targetdirint == number_of_suggestions and new_dir_basename_guess:
+                        targetdirname = generate_absolute_target_dir(new_dir_basename_guess, args, archivepath)
+                    else:
+                        targetdirname = directory_suggestions[targetdirint - 1]  # -1 fixes that we start from 1 instead of 0
+                        targetdirname = generate_absolute_target_dir(targetdirname, args, archivepath)
                     logging.debug("user selected existing directory \"%s\"" % (targetdirname))
                 else:
                     # if number is not in range of suggestions, use it as folder name like below:
