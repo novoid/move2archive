@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-PROG_VERSION = u"Time-stamp: <2023-06-11 13:53:52 vk>"
+PROG_VERSION = u"Time-stamp: <2023-06-11 14:09:43 vk>"
 
 import os
 import sys
@@ -553,9 +553,13 @@ def main():
     elif not options.batchmode:
 
         directory_suggestions = get_potential_target_directories(args, archivepath)
-        new_dir_basename_guess = guess_new_directory_basename(args[0], args[1])
-        if new_dir_basename_guess:
-            number_of_suggestions = len(directory_suggestions) + 1
+        new_dir_basename_guess = False
+        if len(args) > 1:
+            new_dir_basename_guess = guess_new_directory_basename(args[0], args[1])
+            if new_dir_basename_guess:
+                number_of_suggestions = len(directory_suggestions) + 1
+            else:
+                number_of_suggestions = len(directory_suggestions)
         else:
             number_of_suggestions = len(directory_suggestions)
         if number_of_suggestions > 0:
