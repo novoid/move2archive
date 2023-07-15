@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-PROG_VERSION = u"Time-stamp: <2023-06-11 14:09:43 vk>"
+PROG_VERSION = u"Time-stamp: <2023-07-15 18:42:59 vk>"
 
 import os
 import sys
@@ -462,8 +462,10 @@ def guess_new_directory_basename(filename1, filename2):
     
     if startswith_datestamp(file1) and startswith_datestamp(file2):
         # cut most probably identical datestamp to avoid false positive matchstring:
-        substring = longestSubstringFinder(file1[10:], file2[10:])
+        logging.debug('guess_new_directory_basename: finding longest common prefix after omitting time- or datestamps (remove anything before first space or underliner)')
+        substring = longestSubstringFinder(re.sub(r'.*?[ _](.*)', r'\1', file1), re.sub(r'.*?[ _](.*)', r'\1', file2))
     else:
+        logging.debug('guess_new_directory_basename: finding longest common prefix')
         substring = longestSubstringFinder(file1, file2)
 
     if substring:
